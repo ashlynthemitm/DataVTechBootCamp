@@ -1,0 +1,69 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import xlrd 
+
+  
+def function_overlap_audit(index,agency_num): 
+    input_catgry = []
+    num_catgry = 1
+    count = 0
+    location = "GCAA_DASHBOARD.xlsx"
+    wb = xlrd.open_workbook(location)
+    sheet = wb.sheet_by_index(0)
+    for i in range(2,11):
+
+        if (sheet.cell_value(agency_num,i) == 0):
+            count = count + 1
+            input_catgry.append(num_catgry); 
+        num_catgry = num_catgry + 1
+    while(count<5):
+        input_catgry.append(0)
+        count = count + 1
+    
+    return input_catgry  
+    
+    
+
+
+def function_audit(): 
+    audit_not_met = []
+    labels = []
+    alist = {}
+    key = 0
+    x = [1,2,3,4,5]
+    name_catgry = ['Consumer Input & Involvement','Community Engagement','Community Assessment','Organizational Leadership','Board Governance','Strategic Planning','Human Resource Management','Financial Operations Oversight','Data and Analysis']
+    colors = ['yellowgreen','red','gold','lightskyblue','orange','coral','blue','pink', 'beige','darkgreen','grey','violet','magenta','cyan']
+    test_not_zero = True
+    location = "GCAA_DASHBOARD.xlsx"
+    wb = xlrd.open_workbook(location)
+    sheet = wb.sheet_by_index(0)
+    for i in range(1,24):
+        if (sheet.cell_value(i,18) == 0):
+            test_not_zero = False
+        if (test_not_zero): 
+            key = sheet.cell_value(i,0)[2:] 
+            cat_value = function_overlap_audit(key,i)
+            
+            alist[key] = cat_value
+            audit_not_met.insert(i,sheet.cell_value(i,18))
+            labels.insert(i, sheet.cell_value(i,0)[2:])        
+
+        test_not_zero = True
+    print(alist)
+
+    
+    plt.pie(audit_not_met, labels=labels, shadow=True, 
+        colors=colors, startangle=90, radius=1.2)
+    plt.show() 
+    
+    for keys in alist.keys():
+        plt.plot(x,alist[keys])
+    plt.show()
+    
+function_audit() 
+
+
+
+
+
